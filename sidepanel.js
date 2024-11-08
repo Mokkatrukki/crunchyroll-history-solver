@@ -6,6 +6,18 @@ class CrunchyrollHistoryViewer {
         this.initializeEventListeners();
         this.loadHistory();
     }
+    getEpisodeColor(watchStatus) {
+        switch (watchStatus) {
+            case 'watched':
+                return '#4CAF50'; // Green
+            case 'partial':
+                return '#FFC107'; // Yellow
+            case 'unwatched':
+                return '#424242'; // Gray
+            default:
+                return '#424242'; // Default gray
+        }
+    }
 
     initializeEventListeners() {
         document.getElementById('startScan').addEventListener('click', () => {
@@ -168,8 +180,16 @@ class CrunchyrollHistoryViewer {
                     
                     const watched = seasonEpisodes.find(ep => ep.number === i);
                     if (watched) {
-                        epElement.style.backgroundColor = '#4CAF50';
-                        epElement.title = watched.name;
+                        const backgroundColor = this.getEpisodeColor(watched.watchStatus);
+                        epElement.style.backgroundColor = backgroundColor;
+                        
+                        // Add watch status to tooltip
+                        let tooltipText = `${watched.name}\n`;
+                        tooltipText += watched.watchStatus === 'partial' ? '(Partially watched)' : 
+                                     watched.watchStatus === 'watched' ? '(Watched)' : 
+                                     '(Not watched)';
+                        
+                        epElement.title = tooltipText;
                         epElement.addEventListener('click', () => {
                             window.open(watched.url, '_blank');
                         });

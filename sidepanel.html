@@ -31,15 +31,6 @@
             color: white;
         }
 
-        .refresh-btn {
-            background-color: white;
-            color: #f47521;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
         .series-container {
             margin-bottom: 24px;
             background-color: #2a2a2a;
@@ -87,6 +78,7 @@
             text-align: center;
             margin-top: 20px;
         }
+
         .scan-controls {
             display: flex;
             gap: 8px;
@@ -135,25 +127,27 @@
         .scanning .scanning-indicator {
             display: inline;
         }
-        .controls {
-            margin-bottom: 20px;
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-        }
+
         .danger-zone {
             margin-top: 20px;
             padding: 10px;
-            border-top: 1px solid #ccc;
+            border-top: 1px solid #333;
+            text-align: center;
         }
-        .danger-button {
+
+        .reset-btn {
             background-color: #dc3545;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
-        .danger-button:hover {
-            background-color: #c82333;
+
+        .reset-btn:hover {
+            background-color: #bb2d3b;
         }
     </style>
 </head>
@@ -181,7 +175,7 @@
     </div>
 
     <div class="danger-zone">
-        <button id="resetHistory" class="danger-button">Reset History</button>
+        <button class="reset-btn" id="resetHistory">Reset History</button>
     </div>
 
     <script src="sidepanel.js"></script>

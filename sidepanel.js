@@ -23,6 +23,15 @@ class CrunchyrollHistoryViewer {
                 this.loadHistory();
             }
         });
+
+        document.getElementById('resetHistory').addEventListener('click', async () => {
+            if (confirm('Are you sure you want to reset your collected history? This cannot be undone.')) {
+                await chrome.storage.local.remove('crunchyrollHistory');
+                this.contentElement.innerHTML = '<p style="text-align: center; color: #888;">No history data available.</p>';
+                this.lastUpdatedElement.textContent = 'Last updated: Never';
+                this.statusElement.textContent = 'History reset complete';
+            }
+        });
     }
 
     async startScanning() {

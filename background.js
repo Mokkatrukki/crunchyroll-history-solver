@@ -5,12 +5,23 @@ chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true })
 // Function to inject content script if needed
 async function ensureContentScript(tabId) {
   try {
-    await chrome.scripting.executeScript({
+    // Check if script is already injected
+    const [{ result }] = await chrome.scripting.executeScript({
       target: { tabId: tabId },
-      files: ['content-script.js']
+      func: () => typeof window.crunchyrollHistoryCollector !== 'undefined'
     });
+
+    if (!result) {
+      await chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        files: ['content-script.js']
+      });
+      console.log('Content script injected');
+    } else {
+      console.log('Content script already exists');
+    }
   } catch (error) {
-    console.log('Content script already exists or injection failed:', error);
+    console.error('Error managing content script:', error);
   }
 }
 

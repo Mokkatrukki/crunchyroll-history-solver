@@ -19,7 +19,7 @@
       "js": ["content-script.js"]
     }],
     "web_accessible_resources": [{
-      "resources": ["historyCollector.js"],
+      "resources": ["historyCollector.js", "uiRenderer.js"],
       "matches": ["https://www.crunchyroll.com/*"]
     }],
     "action": {

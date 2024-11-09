@@ -14,12 +14,14 @@
     "host_permissions": [
       "https://www.crunchyroll.com/*"
     ],
-    "content_scripts": [
-      {
-        "matches": ["https://www.crunchyroll.com/history*"],
-        "js": ["content-script.js"]
-      }
-    ],
+    "content_scripts": [{
+      "matches": ["https://www.crunchyroll.com/history*"],
+      "js": ["content-script.js"]
+    }],
+    "web_accessible_resources": [{
+      "resources": ["historyCollector.js"],
+      "matches": ["https://www.crunchyroll.com/*"]
+    }],
     "action": {
       "default_title": "Crunchyroll History",
       "default_icon": {

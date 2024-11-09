@@ -1,4 +1,6 @@
-// Use IIFE to avoid global scope pollution
+// ====================
+// INITIALIZATION
+// ====================
 (function() {
     // Clean up existing instance if it exists
     if (window.crunchyrollHistoryCollector) {
@@ -12,7 +14,11 @@
     window.crunchyrollHistoryCollector = {
         isScanning: false,
         scrollTimeout: null,
+        totalNewItemsInSession: 0,
 
+// ====================
+// EVENT MANAGEMENT
+// ====================
         cleanup: function() {
             this.stopScanning();
             this.removeEventListeners();
@@ -28,6 +34,9 @@
             this.scrollTimeout = setTimeout(() => this.collectHistory(), 500);
         },
 
+// ====================
+// STATUS DETECTION
+// ====================
         getWatchStatus: function(card) {
             try {
                 const statusElement = card.querySelector('.history-playable-card__thumbnail-wrapper--xOHuX .playable-thumbnail__duration--p-Ldq');
@@ -58,6 +67,9 @@
             }
         },
 
+// ====================
+// DATA COLLECTION
+// ====================
         collectHistory: async function() {
             if (!this.isScanning) return;
             
@@ -117,6 +129,9 @@
                     }
                 });
 
+// ====================
+// STORAGE MANAGEMENT
+// ====================
                 await chrome.storage.local.get('crunchyrollHistory', (result) => {
                     let existingData = result.crunchyrollHistory?.data || [];
                     let existingUrls = new Set(existingData.map(item => item.episode.url));
@@ -124,6 +139,9 @@
                     let newItems = historyData.filter(item => !existingUrls.has(item.episode.url));
                     let mergedData = [...existingData, ...newItems];
                     
+                    // Update the session counter
+                    this.totalNewItemsInSession += newItems.length;
+
                     chrome.storage.local.set({
                         crunchyrollHistory: {
                             data: mergedData,
@@ -132,11 +150,11 @@
                         }
                     }, () => {
                         console.log('History saved:', mergedData.length, 'total items', 
-                                  '(', newItems.length, 'new items )');
+                                  '(', this.totalNewItemsInSession, 'new items in this session)');
                         chrome.runtime.sendMessage({
                             action: "updateStatus",
                             totalItems: mergedData.length,
-                            newItems: newItems.length,
+                            newItems: this.totalNewItemsInSession,
                             isScanning: this.isScanning
                         });
                     });
@@ -147,8 +165,12 @@
             }
         },
 
+// ====================
+// SCANNING CONTROLS
+// ====================
         startScanning: function() {
             this.isScanning = true;
+            this.totalNewItemsInSession = 0;  // Reset counter when starting new scan
             window.addEventListener('scroll', this.handleScroll.bind(this));
             this.collectHistory();
             console.log('Scanning started');
@@ -156,10 +178,14 @@
 
         stopScanning: function() {
             this.isScanning = false;
+            this.totalNewItemsInSession = 0;  // Reset counter when stopping
             window.removeEventListener('scroll', this.handleScroll.bind(this));
             console.log('Scanning stopped');
         },
 
+// ====================
+// MESSAGE HANDLING
+// ====================
         initialize: function() {
             chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 console.log('Message received:', request.action);

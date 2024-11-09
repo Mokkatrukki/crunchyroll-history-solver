@@ -1,3 +1,6 @@
+// ====================
+// CLASS DEFINITION
+// ====================
 class CrunchyrollHistoryViewer {
     constructor() {
         this.contentElement = document.getElementById('history-content');
@@ -6,6 +9,10 @@ class CrunchyrollHistoryViewer {
         this.initializeEventListeners();
         this.loadHistory();
     }
+
+// ====================
+// STYLING & THEMING
+// ====================
     getEpisodeColor(watchStatus) {
         switch (watchStatus) {
             case 'watched':
@@ -19,6 +26,9 @@ class CrunchyrollHistoryViewer {
         }
     }
 
+// ====================
+// EVENT MANAGEMENT
+// ====================
     initializeEventListeners() {
         document.getElementById('startScan').addEventListener('click', () => {
             this.startScanning();
@@ -46,6 +56,9 @@ class CrunchyrollHistoryViewer {
         });
     }
 
+// ====================
+// SCANNING CONTROL
+// ====================
     async startScanning() {
         try {
             // First, find or create history tab
@@ -91,7 +104,9 @@ class CrunchyrollHistoryViewer {
         }
     }
 
-
+// ====================
+// STATUS MANAGEMENT
+// ====================
     updateStatus(status) {
         if (status.isScanning) {
             this.statusElement.textContent = `Scanning... Found ${status.totalItems} episodes total (${status.newItems} new)`;
@@ -100,26 +115,15 @@ class CrunchyrollHistoryViewer {
         }
     }
 
+// ====================
+// DATA LOADING & PROCESSING
+// ====================
     async loadHistory() {
         const stored = await chrome.storage.local.get('crunchyrollHistory');
         if (stored.crunchyrollHistory) {
             this.renderHistory(stored.crunchyrollHistory);
         } else {
             this.contentElement.innerHTML = '<p style="text-align: center; color: #888;">No history data available. Visit Crunchyroll history page to collect data.</p>';
-        }
-    }
-
-    renderHistory(historyData) {
-        this.contentElement.innerHTML = '';
-        const seriesMap = this.groupBySeries(historyData.data);
-        
-        Object.entries(seriesMap).forEach(([title, data]) => {
-            const seriesElement = this.createSeriesElement(title, data);
-            this.contentElement.appendChild(seriesElement);
-        });
-
-        if (historyData.lastUpdated) {
-            this.lastUpdatedElement.textContent = `Last updated: ${new Date(historyData.lastUpdated).toLocaleString()}`;
         }
     }
 
@@ -148,6 +152,23 @@ class CrunchyrollHistoryViewer {
         });
 
         return seriesMap;
+    }
+
+// ====================
+// UI RENDERING
+// ====================
+    renderHistory(historyData) {
+        this.contentElement.innerHTML = '';
+        const seriesMap = this.groupBySeries(historyData.data);
+        
+        Object.entries(seriesMap).forEach(([title, data]) => {
+            const seriesElement = this.createSeriesElement(title, data);
+            this.contentElement.appendChild(seriesElement);
+        });
+
+        if (historyData.lastUpdated) {
+            this.lastUpdatedElement.textContent = `Last updated: ${new Date(historyData.lastUpdated).toLocaleString()}`;
+        }
     }
 
     createSeriesElement(title, data) {
@@ -209,7 +230,9 @@ class CrunchyrollHistoryViewer {
     }
 }
 
-// Initialize the viewer when the document is loaded
+// ====================
+// INITIALIZATION
+// ====================
 document.addEventListener('DOMContentLoaded', () => {
     new CrunchyrollHistoryViewer();
 });
